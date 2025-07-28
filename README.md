@@ -1,6 +1,6 @@
 # Fungible Token Project 🪙
 
-A complete Rust project for deploying and interacting with a NEAR Fungible Token (NEP-141) contract.
+A complete Rust project for deploying and interacting with a NEAR Fungible Token (NEP-141) contract on testnet.
 
 ## 📁 Project Structure
 
@@ -12,15 +12,14 @@ ft-project/
 │       └── src/
 │           └── lib.rs      # NEP-141 implementation
 ├── scripts/                # Rust scripts for deployment and interaction
-│   ├── create_account.rs   # Create new NEAR accounts
-│   ├── deploy_contract.rs  # Deploy FT contract
-│   ├── interact_with_ft.rs # Interact with deployed FT
-│   └── check_token_state.rs # Check token state and info
+│   ├── deploy_from_keystore.rs  # Deploy to testnet using existing account
+│   └── interact_testnet.rs      # Interact with deployed FT on testnet
 ├── tests/
 │   └── ft_tests.rs         # Integration tests
 ├── src/
 │   └── lib.rs              # Utility functions
 ├── Cargo.toml              # Workspace configuration
+├── .env                    # Environment configuration (create from .env.example)
 └── README.md
 ```
 
@@ -29,8 +28,8 @@ ft-project/
 ### Prerequisites
 
 - Rust (with `wasm32-unknown-unknown` target)
-- NEAR CLI (optional, for account creation)
-- A NEAR testnet account with funds (for deployment)
+- A NEAR testnet account with funds
+- Your account's private key
 
 ```bash
 # Install Rust
@@ -38,26 +37,37 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
 # Add WASM target
 rustup target add wasm32-unknown-unknown
-
-# Install NEAR CLI (optional)
-npm install -g near-cli-rs
 ```
 
 ### Setup
 
 1. Clone this project
-2. Create a `.env` file with your credentials:
+
+2. **Create a testnet account** (if you don't have one):
+
+   **Option A: Using NEAR CLI (Recommended)**
+   ```bash
+   # Install NEAR CLI
+   npm install -g near-cli-rs
+
+   # Create account with faucet funding
+   near account create-account sponsor-by-faucet-service <your-name>.testnet autogenerate-new-keypair save-to-keychain network-config testnet create
+   ```
+   **Getting your credentials for .env:**
+    
+    Use Near CLI to check your account
+3. Create a `.env` file with your testnet credentials:
 
 ```env
-# For creating new accounts (optional)
-FUNDER_ACCOUNT_ID=your-funded-account.testnet
-FUNDER_SECRET_KEY=ed25519:your-secret-key
+# Parent account credentials (testnet)
+PARENT_ACCOUNT_ID=your-account.testnet
+PARENT_PRIVATE_KEY=ed25519:your-private-key-here
 
-# For deployment (will be auto-generated if using create-account)
-ACCOUNT_ID=your-account.testnet
-PRIVATE_KEY=ed25519:your-private-key
+# Subaccount configuration
+# This will create: ft.your-account.testnet
+SUBACCOUNT_PREFIX=ft
 
-# FT Configuration
+# Token configuration
 FT_NAME=My Token
 FT_SYMBOL=MTK
 FT_DECIMALS=8
@@ -66,62 +76,54 @@ FT_TOTAL_SUPPLY=1000000000000000
 
 ## 📝 Scripts
 
-### 1. Create Account
-Creates a new NEAR testnet account:
-
-```bash
-cargo run --bin create-account
-```
-
-This will:
-- Generate a new key pair
-- Create a new testnet account (if you have a funder account)
-- Save credentials to `.env`
-
-### 2. Deploy Contract
-Deploys the FT contract to your account:
+### Deploy to Testnet
+Deploy your fungible token contract:
 
 ```bash
 cargo run --bin deploy
 ```
 
-This will:
-- Build the FT contract
-- Deploy it to your account
-- Initialize with specified parameters
-- Save the contract ID to `.env`
+This script will:
+- ✅ Build your contract automatically
+- ✅ Create a new subaccount from your parent account
+- ✅ Deploy and initialize the FT contract
+- ✅ Save deployment info to `deployment-info.env`
+- ✅ Show you the contract address and explorer link
 
-### 3. Interact with Token
-Interactive menu for token operations:
+The script displays progress at each step and provides helpful error messages if anything goes wrong.
+
+### Interact with Your Token
+Transfer tokens and check balances:
 
 ```bash
 cargo run --bin interact
 ```
 
-Options:
-1. Check token balance
-2. Transfer tokens
-3. Check total supply
-4. View token metadata
-5. Register new accounts for storage
+This script will:
+- 📊 Show token metadata (name, symbol, decimals)
+- 💰 Display your current balance
+- 🔄 Transfer tokens to a recipient (configured in the script)
+- 📈 Show updated balances in a nice table format
 
-### 4. Check Token State
-View comprehensive token information:
+To customize the transfer:
+- Edit `RECIPIENT_ACCOUNT` in `scripts/interact.rs` (default: holoo.testnet)
+- Edit `TRANSFER_AMOUNT` in `scripts/interact.rs` (default: 10 tokens)
 
-```bash
-cargo run --bin check-token
-```
+This script:
+- Connects to your deployed FT contract
+- Shows token metadata
+- Checks your balance
+- Transfers tokens to a recipient (configured in the script)
+- Shows updated balances
 
-Shows:
-- Token metadata (name, symbol, decimals)
-- Total supply
-- Owner balance
-- Storage requirements
-- Contract information
+To customize the transfer:
+- Edit `scripts/interact_testnet.rs`
+- Change `RECIPIENT_ACCOUNT` constant
+- Change `TRANSFER_AMOUNT` constant (in base units)
 
 ## 🧪 Testing
 
-Run integration tests:
+Run integration tests (uses sandbox environment):
 
 ```bash
 cargo test
@@ -163,24 +165,55 @@ The compiled WASM will be at:
 
 ## 🔍 Example Usage
 
-After deployment, you can interact with your token:
+After deployment, your token will be live at: `ft.your-account.testnet`
 
-```rust
-// Check balance
-let balance = contract.view("ft_balance_of")
-    .args_json(json!({ "account_id": "alice.testnet" }))
-    .await?;
+### Check on Explorer
+View your deployed token: `https://testnet.nearblocks.io/address/ft.your-account.testnet`
 
-// Transfer tokens
-let result = account.call(contract_id, "ft_transfer")
-    .args_json(json!({
-        "receiver_id": "bob.testnet",
-        "amount": "1000000"
-    }))
-    .deposit(1) // 1 yoctoNEAR for security
-    .transact()
-    .await?;
+### Using the Scripts
+
+1. **Deploy**:
+   ```bash
+   cargo run --bin deploy-from-keystore
+   ```
+
+2. **Interact**:
+   ```bash
+   cargo run --bin interact-testnet
+   ```
+
+### Manual Interaction with NEAR CLI
+
+```bash
+# Check balance
+near view ft.your-account.testnet ft_balance_of '{"account_id": "your-account.testnet"}'
+
+# Transfer tokens
+near call ft.your-account.testnet ft_transfer '{"receiver_id": "recipient.testnet", "amount": "1000000000"}' --accountId your-account.testnet --depositYocto 1
 ```
+
+## 🔑 Account Management
+
+
+### Creating Additional Accounts
+
+You can create more testnet accounts anytime:
+```bash
+# Create with custom name
+near account create-account sponsor-by-faucet-service another-account.testnet autogenerate-new-keypair save-to-keychain network-config testnet create
+
+# Create sub-account (requires existing account)
+near account create-account fund-myself my-token.your-account.testnet 5 autogenerate-new-keypair save-to-keychain sign-as your-account.testnet network-config testnet create
+```
+
+## 🔐 Security Notes
+
+⚠️ **Important**:
+- **Never commit `.env` to version control** (it's in .gitignore)
+- Keep your private key secure
+- Never share your private key publicly
+- For production, use a hardware wallet or secure key management
+- The example uses testnet - be extra careful with mainnet
 
 ## 📖 Resources
 
@@ -188,6 +221,7 @@ let result = account.call(contract_id, "ft_transfer")
 - [NEAR SDK Rust](https://github.com/near/near-sdk-rs)
 - [NEAR Workspaces](https://github.com/near/near-workspaces-rs)
 - [NEAR Documentation](https://docs.near.org)
+- [NEAR Testnet Explorer](https://testnet.nearblocks.io)
 
 ## 🤝 Contributing
 

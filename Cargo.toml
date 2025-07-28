@@ -8,35 +8,23 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-near-workspaces = "0.14"
-tokio = { version = "1.12.0", features = ["full"] }
+near-api = "0.6.1"
+near-crypto = "0.30.3"
+near-primitives = "0.30.3"
+tokio = { version = "1.41.0", features = ["full"] }
 serde_json = "1"
 serde = { version = "1.0", features = ["derive"] }
 anyhow = "1.0"
 dotenv = "0.15"
-near-token = "0.3.0"
 chrono = "0.4"
 
-[[bin]]
-name = "create-account"
-path = "scripts/create_account.rs"
+[dev-dependencies]
+near-workspaces = { version = "0.16.0", features = ["unstable"] }
 
 [[bin]]
 name = "deploy"
-path = "scripts/deploy_contract.rs"
+path = "scripts/deploy.rs"
 
 [[bin]]
 name = "interact"
-path = "scripts/interact_with_ft.rs"
-
-[[bin]]
-name = "check-token"
-path = "scripts/check_token_state.rs"
-
-[[bin]]
-name = "deploy-from-keystore"
-path = "scripts/deploy_from_keystore.rs"
-
-[[bin]]
-name = "interact-testnet"
-path = "scripts/interact_testnet.rs"
+path = "scripts/interact.rs"
