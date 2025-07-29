@@ -19,5 +19,9 @@ name = "deploy"
 path = "scripts/deploy.rs"
 
 [[bin]]
+name = "deploy_simple"
+path = "scripts/deploy_simple.rs"
+
+[[bin]]
 name = "interact"
 path = "scripts/interact.rs"

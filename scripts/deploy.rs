@@ -76,8 +76,8 @@ async fn main() -> Result<()> {
     
     println!("📦 Building contract...");
     let build_output = std::process::Command::new("cargo")
-        .args(&["build", "--release", "--target", "wasm32-unknown-unknown"])
-        .current_dir("contracts/ft")
+        .args(&["near", "build", "non-reproducible-wasm"])
+        .current_dir("contracts")
         .output()?;
     
     if !build_output.status.success() {
@@ -86,7 +86,7 @@ async fn main() -> Result<()> {
     }
     
     // Read the compiled WASM file
-    let wasm_path = "contracts/ft/target/wasm32-unknown-unknown/release/fungible_token.wasm";
+    let wasm_path = "contracts/target/wasm32-unknown-unknown/release/fungible_token.wasm";
     let wasm_code = std::fs::read(wasm_path)?;
     
     println!("✅ Contract built successfully");
@@ -104,13 +104,14 @@ async fn main() -> Result<()> {
     let create_result = Account::create_account(subaccount_id.clone())
         .fund_myself(
             parent_account.clone(),
-            NearToken::from_millinear(5000), // 5 NEAR initial balance
+            NearToken::from_millinear(3000), // 0.1 NEAR initial balance
         )
         .public_key(new_private_key.public_key())?
         .with_signer(signer.clone())
         .send_to(&network)
         .await?;
     
+
     println!("✅ Subaccount created!");
     println!("   Transaction: https://testnet.nearblocks.io/txns/{:?}", 
         create_result.transaction_outcome.id);
@@ -132,6 +133,8 @@ async fn main() -> Result<()> {
         }
     });
     
+    println!("{:?}", init_args);
+    
     // Create signer for the new subaccount
     let subaccount_signer = Signer::new(Signer::from_secret_key(new_private_key.clone()))?;
     
@@ -143,6 +146,9 @@ async fn main() -> Result<()> {
         .send_to(&network)
         .await?;
     
+
+    println!("{:?}", deploy_result);
+
     println!("✅ Contract deployed and initialized!");
     println!("   Transaction: https://testnet.nearblocks.io/txns/{:?}", 
         deploy_result.transaction_outcome.id);
