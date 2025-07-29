@@ -77,7 +77,7 @@ async fn main() -> Result<()> {
     }
     
     // Read the compiled WASM file
-    let wasm_path = "contracts/target/wasm32-unknown-unknown/release/fungible_token.wasm";
+    let wasm_path = "contracts/target/near/fungible_token.wasm";
     let wasm_code = std::fs::read(wasm_path)?;
     
     println!("✅ Contract built successfully");
@@ -87,7 +87,7 @@ async fn main() -> Result<()> {
     // ===== 4. DEPLOY AND INITIALIZE CONTRACT =====
     
     // COMMENTED OUT DEPLOYMENT - NOW JUST CALLING FUNCTION ON EXISTING CONTRACT
-    /*
+    
     println!("📤 Deploying contract to your account...");
     
     // Prepare initialization arguments
@@ -110,34 +110,34 @@ async fn main() -> Result<()> {
     println!("   Transaction: https://testnet.nearblocks.io/txns/{:?}", 
         deploy_result.transaction_outcome.id);
     println!();
-    */
     
-    // ===== 4. CALL FUNCTION ON EXISTING CONTRACT =====
     
-    println!("📤 Calling initialization function on existing contract...");
+    // // ===== 4. CALL FUNCTION ON EXISTING CONTRACT =====
     
-    // Prepare initialization arguments
-    let init_args = json!({
-        "owner_id": account,
-        "total_supply": ft_total_supply,
-    });
+    // println!("📤 Calling initialization function on existing contract...");
     
-    println!("Init args: {}", serde_json::to_string_pretty(&init_args)?);
+    // // Prepare initialization arguments
+    // let init_args = json!({
+    //     "owner_id": account,
+    //     "total_supply": ft_total_supply,
+    // });
     
-    // Call initialization function on already deployed contract
-    let contract = near_api::Contract(account.clone());
-    let call_result = contract
-        .call_function("new_default_meta", init_args)?
-        .transaction()
-        .deposit(NearToken::from_yoctonear(0)) // No deposit needed for init
-        .with_signer(account.clone(), signer.clone())
-        .send_to(&network)
-        .await?;
+    // println!("Init args: {}", serde_json::to_string_pretty(&init_args)?);
     
-    println!("✅ Function called successfully!");
-    println!("   Transaction: https://testnet.nearblocks.io/txns/{:?}", 
-        call_result.transaction_outcome.id);
-    println!();
+    // // Call initialization function on already deployed contract
+    // let contract = near_api::Contract(account.clone());
+    // let call_result = contract
+    //     .call_function("new_default_meta", init_args)?
+    //     .transaction()
+    //     .deposit(NearToken::from_yoctonear(0)) // No deposit needed for init
+    //     .with_signer(account.clone(), signer.clone())
+    //     .send_to(&network)
+    //     .await?;
+    
+    // println!("✅ Function called successfully!");
+    // println!("   Transaction: https://testnet.nearblocks.io/txns/{:?}", 
+    //     call_result.transaction_outcome.id);
+    // println!();
     
     // ===== 5. VERIFY DEPLOYMENT =====
     
