@@ -7,18 +7,18 @@ A complete Rust project for deploying and interacting with a NEAR Fungible Token
 ```
 ft-project/
 ├── contracts/
-│   └── ft/                 # Fungible Token contract
-│       ├── Cargo.toml
-│       └── src/
-│           └── lib.rs      # NEP-141 implementation
+│   ├── Cargo.toml          # Contract package configuration
+│   └── ft/                 # Fungible Token source
+│       ├── src/
+│       │   └── lib.rs      # NEP-141 implementation
+│       └── tests/
+│           └── ft_tests.rs # Integration tests
 ├── scripts/                # Rust scripts for deployment and interaction
-│   ├── deploy_from_keystore.rs  # Deploy to testnet using existing account
-│   └── interact_testnet.rs      # Interact with deployed FT on testnet
-├── tests/
-│   └── ft_tests.rs         # Integration tests
+│   ├── deploy.rs           # Deploy to testnet
+│   └── interact.rs         # Interact with deployed FT
 ├── src/
 │   └── lib.rs              # Utility functions
-├── Cargo.toml              # Workspace configuration
+├── Cargo.toml              # Main project configuration
 ├── .env                    # Environment configuration (create from .env.example)
 └── README.md
 ```
@@ -56,6 +56,8 @@ rustup target add wasm32-unknown-unknown
    **Getting your credentials for .env:**
     
     Use Near CLI to check your account
+
+    
 3. Create a `.env` file with your testnet credentials:
 
 ```env
@@ -117,7 +119,7 @@ This script:
 - Shows updated balances
 
 To customize the transfer:
-- Edit `scripts/interact_testnet.rs`
+- Edit `scripts/interact.rs`
 - Change `RECIPIENT_ACCOUNT` constant
 - Change `TRANSFER_AMOUNT` constant (in base units)
 
@@ -126,7 +128,12 @@ To customize the transfer:
 Run integration tests (uses sandbox environment):
 
 ```bash
+# From the contracts directory
+cd contracts
 cargo test
+
+# Or from the main project directory
+cargo test -p fungible-token
 ```
 
 Tests include:
@@ -140,12 +147,13 @@ Tests include:
 To build the contract manually:
 
 ```bash
-cd contracts/ft
+# From the contracts directory
+cd contracts
 cargo build --release --target wasm32-unknown-unknown
 ```
 
 The compiled WASM will be at:
-`contracts/ft/target/wasm32-unknown-unknown/release/fungible_token.wasm`
+`contracts/target/wasm32-unknown-unknown/release/fungible_token.wasm`
 
 ## 📚 Contract Methods
 
@@ -174,12 +182,12 @@ View your deployed token: `https://testnet.nearblocks.io/address/ft.your-account
 
 1. **Deploy**:
    ```bash
-   cargo run --bin deploy-from-keystore
+   cargo run --bin deploy
    ```
 
 2. **Interact**:
    ```bash
-   cargo run --bin interact-testnet
+   cargo run --bin interact
    ```
 
 ### Manual Interaction with NEAR CLI
