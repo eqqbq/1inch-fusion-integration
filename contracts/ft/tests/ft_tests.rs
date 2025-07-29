@@ -4,7 +4,7 @@ use serde_json::json;
 #[tokio::test]
 async fn test_ft_total_supply() -> Result<(), Box<dyn std::error::Error>> {
     let worker = near_workspaces::sandbox().await?;
-    let contract_wasm = near_workspaces::compile_project("../").await?;
+    let contract_wasm = near_workspaces::compile_project("./").await?;
 
     let contract = worker.dev_deploy(&contract_wasm).await?;
 
@@ -37,7 +37,7 @@ async fn test_ft_total_supply() -> Result<(), Box<dyn std::error::Error>> {
 #[tokio::test]
 async fn test_ft_transfer() -> Result<(), Box<dyn std::error::Error>> {
     let worker = near_workspaces::sandbox().await?;
-    let contract_wasm = near_workspaces::compile_project("../").await?;
+    let contract_wasm = near_workspaces::compile_project("./").await?;
 
     let contract = worker.dev_deploy(&contract_wasm).await?;
     let alice = worker.dev_create_account().await?;
@@ -109,7 +109,7 @@ async fn test_ft_transfer() -> Result<(), Box<dyn std::error::Error>> {
 #[tokio::test]
 async fn test_ft_metadata() -> Result<(), Box<dyn std::error::Error>> {
     let worker = near_workspaces::sandbox().await?;
-    let contract_wasm = near_workspaces::compile_project("../").await?;
+    let contract_wasm = near_workspaces::compile_project("./").await?;
 
     let contract = worker.dev_deploy(&contract_wasm).await?;
 
@@ -144,7 +144,7 @@ async fn test_ft_metadata() -> Result<(), Box<dyn std::error::Error>> {
 #[tokio::test]
 async fn test_storage_management() -> Result<(), Box<dyn std::error::Error>> {
     let worker = near_workspaces::sandbox().await?;
-    let contract_wasm = near_workspaces::compile_project("../").await?;
+    let contract_wasm = near_workspaces::compile_project("./").await?;
 
     let contract = worker.dev_deploy(&contract_wasm).await?;
     let alice = worker.dev_create_account().await?;
