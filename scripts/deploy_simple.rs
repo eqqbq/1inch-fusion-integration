@@ -77,7 +77,7 @@ async fn main() -> Result<()> {
     }
     
     // Read the compiled WASM file
-    let wasm_path = "contracts/target/near/fungible_token.wasm";
+    let wasm_path = "contracts/ft/target/near/fungible_token.wasm";
     let wasm_code = std::fs::read(wasm_path)?;
     
     println!("✅ Contract built successfully");

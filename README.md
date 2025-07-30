@@ -152,8 +152,6 @@ cd contracts
 cargo build --release --target wasm32-unknown-unknown
 ```
 
-The compiled WASM will be at:
-`contracts/target/wasm32-unknown-unknown/release/fungible_token.wasm`
 
 ## 📚 Contract Methods
 
