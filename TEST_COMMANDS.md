@@ -11,9 +11,9 @@ Make sure you have the following installed:
 ### From the contracts directory (ft-project/contracts/):
 
 ```bash
-# Build the contract
-cargo build --release --target wasm32-unknown-unknown
 
+#
+cargo near build non-reproducible-wasm
 # Run all tests (unit + integration)
 cargo test
 

@@ -71,7 +71,7 @@ async fn test_ft_transfer() -> Result<(), Box<dyn std::error::Error>> {
     let outcome = bob
         .call(contract.id(), "storage_deposit")
         .args_json(json!({}))
-        .deposit(NearToken::from_millinear(1))
+        .deposit(NearToken::from_millinear(10))
         .transact()
         .await?;
     assert!(outcome.is_success());
@@ -181,9 +181,10 @@ async fn test_storage_management() -> Result<(), Box<dyn std::error::Error>> {
     let outcome = alice
         .call(contract.id(), "storage_deposit")
         .args_json(json!({}))
-        .deposit(NearToken::from_millinear(1))
+        .deposit(NearToken::from_millinear(10))
         .transact()
         .await?;
+    println!("Storage deposit outcome: {:?}", outcome);
     assert!(outcome.is_success());
 
     // Check that Alice now has storage
