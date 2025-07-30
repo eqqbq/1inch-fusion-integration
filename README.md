@@ -22,7 +22,7 @@ ft-project/
 ├── .env                    # Environment configuration (create from .env.example)
 └── README.md
 ```
-
+ 
 ## 🚀 Getting Started
 
 ### Prerequisites
